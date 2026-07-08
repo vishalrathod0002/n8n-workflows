@@ -14,7 +14,13 @@ An AI-powered email automation workflow built with **n8n**, **OpenAI GPT-5 Mini*
 - ✍️ Automatically signs emails with your predefined signature
 
 ---
+<p align="center">
+  <img src="./architecture.png" alt="Webhook wrokflow" width="100%">
+</p>
 
+> **Note:** This diagram illustrates the complete n8n workflow used to process shopping requests and return the top product deals.
+
+---
 ## 🏗️ Workflow Overview
 
 ```text
