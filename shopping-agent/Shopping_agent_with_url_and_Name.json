@@ -1,0 +1,501 @@
+{
+  "name": "Shopping_agent",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        176
+      ],
+      "id": "85e8f620-52ae-4a8a-bcd3-f1be720327f7",
+      "name": "Telegram Trigger",
+      "webhookId": "ea6a267a-3728-4a14-a524-a013bfc17821",
+      "credentials": {
+        "telegramApi": {
+          "id": "xrZUyWTs1cklNVVK",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        1648,
+        144
+      ],
+      "id": "8715d595-a0ef-4954-8950-784e75e016dc",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "mRs8UoF87cY0pUSN",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "1",
+              "leftValue": "={{ $json.message.text }}",
+              "rightValue": "http",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "75be8114-70c3-4979-aa09-87af0f3d7a49",
+      "name": "Check Message Type",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        224,
+        176
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.message.text }}",
+        "options": {}
+      },
+      "id": "3e2b1992-4221-4e34-aa7f-be5153a8abee",
+      "name": "Fetch Product Page",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        448,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "extractionValues": {
+          "values": [
+            {
+              "key": "product_name",
+              "cssSelector": "title"
+            },
+            {
+              "key": "price",
+              "cssSelector": ".a-price-whole, .a-offscreen"
+            },
+            {
+              "key": "image",
+              "cssSelector": "#landingImage, #imgTagWrapperId img",
+              "returnValue": "attribute"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0b535290-4fb9-4a55-9689-50890c9ae790",
+      "name": "Extract Product Info",
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        672,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://www.searchapi.io/api/v1/search",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "api_key",
+              "value": "gM338PMAxd7QHfvzvtr6Sp6y"
+            },
+            {
+              "name": "engine",
+              "value": "google_shopping"
+            },
+            {
+              "name": "q",
+              "value": "={{ $json.product_name.split(\"(\")[0].trim() }}"
+            },
+            {}
+          ]
+        },
+        "options": {}
+      },
+      "id": "2b4ec408-94e1-408f-8f79-062666dc1646",
+      "name": "Search Shopping Results",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        896,
+        80
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "32e407b7-d51e-4305-ba3b-8de083a67742",
+      "name": "Merge Results",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1120,
+        176
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://www.searchapi.io/api/v1/search",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "api_key",
+              "value": "gM338PMAxd7QHfvzvtr6Sp6y"
+            },
+            {
+              "name": "engine",
+              "value": "google_shopping"
+            },
+            {
+              "name": "q",
+              "value": "={{ $json.message.text }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4cb0096c-ffe9-44f9-85ab-c6f1c7dd317f",
+      "name": "Search Direct Query",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        896,
+        272
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "1",
+              "leftValue": "={{ Number($json.shopping_results?.length ?? 0) }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "a798a82c-880f-4f46-a6ef-462e23a134c0",
+      "name": "Check Results Found",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1344,
+        176
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are given this JSON data from Google Shopping results:\n{{ JSON.stringify($json.shopping_results) }}\n\nYour task:\n1. Analyze the \"shopping_results\" list carefully.\n2. Remove irrelevant items (accessories, unrelated variants, duplicate listings, out-of-stock items).\n3. Select the TOP 5 BEST DEALS based on:\n   - Lowest price (prioritize this)\n   - Trusted/reputable store\n   - Product relevance and exact match\n   - Availability of direct purchase link\n   - Customer ratings if available\n4. Output ONLY in Telegram-friendly format with emojis.\n\n---\n\nFORMAT (STRICT):\n\n🔥 Top 5 Deals for [Product Name]\n\n1. 🥇 [Product Title]\n💰 Price: [Price with currency]\n🏪 Store: [Store Name]\n⭐ Rating: [Rating if available, or \"N/A\"]\n🔗 [FULL Direct Product URL - DO NOT SHORTEN]\n\n2. 🥈 [Product Title]\n💰 Price: [Price]\n🏪 Store: [Store Name]\n⭐ Rating: [Rating or \"N/A\"]\n🔗 [FULL URL]\n\n3. 🥉 [Product Title]\n💰 Price: [Price]\n🏪 Store: [Store Name]\n⭐ Rating: [Rating or \"N/A\"]\n🔗 [FULL URL]\n\n4. 🏅 [Product Title]\n💰 Price: [Price]\n🏪 Store: [Store Name]\n⭐ Rating: [Rating or \"N/A\"]\n🔗 [FULL URL]\n\n5. 🎖️ [Product Title]\n💰 Price: [Price]\n🏪 Store: [Store Name]\n⭐ Rating: [Rating or \"N/A\"]\n🔗 [FULL URL]\n\n💡 Tip: Compare prices and check seller ratings before purchasing!\n\n---\n\nCRITICAL RULES:\n- Extract and paste the COMPLETE URL from \"product_link\" or \"link\" field\n- Do NOT use placeholders like [Link] or shorten URLs\n- Do NOT modify or truncate URLs\n- Include currency symbols with prices\n- If fewer than 5 results, show what is available\n- No extra explanation outside the format",
+        "options": {}
+      },
+      "id": "88828af2-8967-4a7e-a934-adca7fc16692",
+      "name": "Analyze Deals",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1568,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "disable_web_page_preview": true
+        }
+      },
+      "id": "d18a1be7-6e0e-4460-9ac9-13fcb02dcf6d",
+      "name": "Send Deals Message",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1920,
+        32
+      ],
+      "webhookId": "79b28439-6d5f-4c23-a352-62bd60e205c9",
+      "credentials": {
+        "telegramApi": {
+          "id": "xrZUyWTs1cklNVVK",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ \"❌ Sorry, I couldn't find any shopping results for that product.\\n\\n💡 Try:\\n• Sending a different product link\\n• Typing the product name directly\\n• Being more specific (e.g., brand + model)\" }}",
+        "additionalFields": {}
+      },
+      "id": "b03b0d35-0dff-4e66-b23d-ed846e1f7317",
+      "name": "No Results Message",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1632,
+        320
+      ],
+      "webhookId": "081802a9-2651-47c5-97f9-a1e29ca4c193",
+      "credentials": {
+        "telegramApi": {
+          "id": "xrZUyWTs1cklNVVK",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## 📥 Input Processing\nHandles both product URLs and direct search queries",
+        "width": 508,
+        "color": 4
+      },
+      "id": "f9818c11-9cb6-43e0-b36c-b87d3e1838b2",
+      "name": "Sticky Note 3a5c1dd6",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -96,
+        -160
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 🔍 Shopping Search\nExtracts product info and finds deals",
+        "height": 152,
+        "width": 476,
+        "color": 5
+      },
+      "id": "07e47038-0100-4bd8-a6df-edab12489143",
+      "name": "Sticky Note 240f6d4b",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        432,
+        -160
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 🤖 AI Analysis\nRanks and formats top 5 deals",
+        "height": 144,
+        "width": 284,
+        "color": 6
+      },
+      "id": "c0a76d85-c2b0-4953-9218-19eba0b6dbaf",
+      "name": "Sticky Note 585d180c",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        944,
+        -160
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 📤 Response\nSends results or error message",
+        "height": 136,
+        "width": 204,
+        "color": 2
+      },
+      "id": "8c3a8dcd-aeaa-4cbf-92fb-db3aaa2dceae",
+      "name": "Sticky Note edd863fc",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1264,
+        -160
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Check Message Type",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Analyze Deals",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Message Type": {
+      "main": [
+        [
+          {
+            "node": "Fetch Product Page",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Search Direct Query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Product Page": {
+      "main": [
+        [
+          {
+            "node": "Extract Product Info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Product Info": {
+      "main": [
+        [
+          {
+            "node": "Search Shopping Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search Shopping Results": {
+      "main": [
+        [
+          {
+            "node": "Merge Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Results": {
+      "main": [
+        [
+          {
+            "node": "Check Results Found",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search Direct Query": {
+      "main": [
+        [
+          {
+            "node": "Merge Results",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Check Results Found": {
+      "main": [
+        [
+          {
+            "node": "Analyze Deals",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Results Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze Deals": {
+      "main": [
+        [
+          {
+            "node": "Send Deals Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner",
+    "executionTimeout": -1,
+    "availableInMCP": false
+  },
+  "versionId": "8d5cd2c2-c54c-4c95-be22-b7c7ba53a180",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "98d1bd8532e891166410762d5735e357a48c91c61fe37d92c4a90eb6efa5855f"
+  },
+  "nodeGroups": [],
+  "id": "VozDhGTnyMzmWktg",
+  "tags": []
+}

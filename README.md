@@ -1,141 +1,181 @@
 # 🚀 n8n Workflows Collection
 
-A centralized collection of reusable, production-ready **n8n workflows** for AI agents, automation, API integrations, and business processes.
+A curated collection of production-ready **n8n workflows** for AI automation, integrations, notifications, and productivity.
 
 Each workflow is self-contained and includes:
-- 📄 Workflow documentation (`README.md`)
+- 📄 Documentation (`README.md`)
 - 🔄 Exported n8n workflow (`.json`)
-- 🖼️ Workflow architecture/screenshot (optional)
-- ⚙️ Environment variable example (if required)
+- 🖼️ Workflow architecture (optional)
+- ⚙️ Environment configuration example (if required)
 
 ---
 
-## 📂 Repository Structure
+# 📂 Repository Structure
 
 ```text
 n8n-workflows/
 │
-├── README.md
-├── LICENSE
-├── .gitignore
-│
+├── ai-email-assistant/
 ├── shopping-agent/
-│   ├── README.md
-│   ├── shopping-agent.json
-│   ├── architecture.png
-│   └── .env.example
-│
-├── send-email-agent/
-│   ├── README.md
-│   ├── send-email-agent.json
-│   ├── architecture.png
-│   └── .env.example
-│
-├── github-monitor/
-│   ├── README.md
-│   ├── github-monitor.json
-│   └── architecture.png
-│
-├── rag-agent/
-│   ├── README.md
-│   ├── rag-agent.json
-│   └── architecture.png
-│
-└── shared/
-    ├── setup.md
-    └── credentials.md
+├── webhook-to-telegram-notification/
+└── weather-reports-agent/
 ```
 
 ---
 
-## 📋 Available Workflows
+# 📋 Available Workflows
 
-| Workflow | Description | Status |
-|----------|-------------|--------|
-| 🛒 Shopping Agent | AI-powered shopping assistant | ✅ |
-| 📧 Send Email Agent | Automates email generation and delivery | ✅ |
-| 🐙 GitHub Monitor | Monitors GitHub repositories and events | ✅ |
-| 🤖 RAG Agent | AI-powered Retrieval-Augmented Generation workflow | ✅ |
-
-> Each workflow has its own documentation with setup instructions, required credentials, and usage examples.
+| Workflow | Description | Technologies |
+|----------|-------------|--------------|
+| 📧 AI Email Assistant | Generate and send professional emails using AI and Gmail. | OpenAI, Gmail, n8n |
+| 🛒 Shopping Agent | Find the best shopping deals from a product link or product name using AI. | Google Gemini, SearchAPI, Telegram |
+| 📩 Webhook to Telegram Notification | Receive HTTP webhook requests and instantly forward them to Telegram. | Webhook, Telegram |
+| 🌤 Weather Reports Agent | Fetch weather information every 2 hours and send reports to Telegram. | OpenWeatherMap, Telegram |
 
 ---
 
-## 🚀 Getting Started
+# 🚀 Getting Started
 
-1. Clone this repository.
+## 1. Clone the Repository
 
 ```bash
 git clone https://github.com/<your-username>/n8n-workflows.git
 ```
 
-2. Open **n8n**.
+## 2. Open n8n
 
-3. Navigate to the workflow you want to use.
+Launch your local or hosted n8n instance.
 
-4. Import the corresponding `.json` file into n8n.
+## 3. Import a Workflow
 
-5. Configure the required credentials.
+Navigate to the desired workflow folder and import the corresponding `.json` file into n8n.
 
-6. Execute or activate the workflow.
+## 4. Configure Credentials
 
----
+Depending on the workflow, configure the required credentials in n8n.
 
-## 📖 Documentation
-
-Each workflow contains its own `README.md` with:
-- Overview
-- Features
-- Prerequisites
-- Installation
-- Required credentials
-- Workflow explanation
-- Inputs and outputs
-- Customization options
-
-Shared documentation is available in the `shared/` directory.
-
----
-
-## 🔑 Credentials
-
-Some workflows require external services such as:
+Examples include:
 
 - OpenAI
-- Google Gmail
-- GitHub
-- Slack
-- Discord
-- PostgreSQL
-- Pinecone
-- Supabase
-- Other third-party APIs
+- Google Gemini
+- Gmail OAuth2
+- Telegram Bot
+- OpenWeatherMap API
+- SearchAPI
 
-Refer to each workflow's documentation for the required credentials.
+## 5. Activate the Workflow
+
+Save and activate the workflow to start using it.
 
 ---
 
-## 🤝 Contributing
+# 🛠 Technologies Used
+
+- n8n
+- OpenAI GPT
+- Google Gemini
+- Gmail API
+- Telegram Bot API
+- OpenWeatherMap API
+- SearchAPI
+- HTTP Requests
+- Webhooks
+
+---
+
+# 📂 Workflow Details
+
+## 📧 AI Email Assistant
+
+Generate professional emails from natural language prompts using AI and send them through Gmail.
+
+**Highlights**
+- AI-generated email content
+- Gmail integration
+- Conversation memory
+- Professional formatting
+
+---
+
+## 🛒 Shopping Agent
+
+Searches Google Shopping using either a product URL or product name and returns the top deals ranked by AI.
+
+**Highlights**
+- Product URL support
+- Product name search
+- AI deal analysis
+- Telegram notifications
+
+---
+
+## 📩 Webhook to Telegram Notification
+
+Receives HTTP POST requests and forwards the payload as a formatted Telegram message.
+
+**Highlights**
+- Webhook endpoint
+- Instant Telegram notifications
+- Lightweight integration
+- Easy API connectivity
+
+---
+
+## 🌤 Weather Reports Agent
+
+Automatically retrieves weather information every two hours and sends a detailed report to Telegram.
+
+**Highlights**
+- Scheduled execution
+- Real-time weather data
+- Error notifications
+- Telegram delivery
+
+---
+
+# 📦 Requirements
+
+Some workflows require one or more of the following services:
+
+- OpenAI API
+- Google Gemini API
+- Gmail OAuth2
+- Telegram Bot API
+- OpenWeatherMap API
+- SearchAPI
+
+Refer to each workflow's **README.md** for setup instructions and required credentials.
+
+---
+
+# 🤝 Contributing
 
 Contributions are welcome!
 
 To add a new workflow:
 
-1. Create a new folder under the repository.
+1. Create a new folder.
 2. Add the exported workflow (`.json`).
-3. Include a `README.md` explaining the workflow.
+3. Include a detailed `README.md`.
 4. Add an architecture image or screenshot (optional).
 5. Include a `.env.example` file if environment variables are required.
-6. Submit a pull request.
+6. Submit a Pull Request.
 
 ---
 
-## 📜 License
+# 📄 License
 
-This project is licensed under the MIT License. See the `LICENSE` file for details.
+This repository is licensed under the **MIT License**.
 
 ---
 
-## ⭐ Support
+# ⭐ Support
 
-If you find these workflows useful, consider giving this repository a ⭐ on GitHub.
+If you find these workflows useful:
+
+- ⭐ Star this repository
+- 🍴 Fork it
+- 🛠 Contribute new workflows
+- 💡 Share your ideas and improvements
+
+Happy Automating! 🚀

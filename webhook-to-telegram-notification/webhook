@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webhook Test Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background: #f4f4f4;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,.1);
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 15px;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        textarea {
+            height: 250px;
+            font-family: monospace;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 12px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Webhook Test Form</h2>
+
+    <label>Webhook URL</label>
+    <input type="text" id="url" value="https://your-api.com/webhook">
+
+    <label>JSON Payload</label>
+    <textarea id="payload">
+{
+    "transactionId": "TXN123456",
+    "merchantId": "MID001",
+    "entityId": "0012",
+    "channel": "GPMPOS",
+    "paymentType": "FULL_DAY",
+    "vatGroup": "VAT01",
+    "amount": 1000,
+    "currency": "THB",
+    "status": "SUCCESS",
+    "timestamp": "2026-07-01T10:30:00Z"
+}
+    </textarea>
+
+    <button onclick="sendWebhook()">Send Webhook</button>
+
+    <div id="result"></div>
+</div>
+
+<script>
+async function sendWebhook() {
+
+    const url = document.getElementById("url").value;
+    const payload = document.getElementById("payload").value;
+
+    try {
+
+        const response = await fetch(url,{
+            method:'POST',
+            headers:{
+                'Content-Type':'application/json'
+            },
+            body:payload
+        });
+
+        const text = await response.text();
+
+        document.getElementById("result").innerHTML =
+`Status : ${response.status}
+
+Response:
+
+${text}`;
+
+    }
+    catch(err){
+
+        document.getElementById("result").innerHTML =
+"Error:\n" + err;
+
+    }
+}
+</script>
+
+</body>
+</html>

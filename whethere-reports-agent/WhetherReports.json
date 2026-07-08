@@ -1,0 +1,271 @@
+{
+  "name": "WhetherReports",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 2
+            }
+          ]
+        }
+      },
+      "id": "0dbbf60a-c348-4139-9e12-79e708d19a69",
+      "name": "Every 2 Hours",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        240,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1",
+              "name": "city",
+              "value": "<__PLACEHOLDER_VALUE__City name (e.g., Pune, London, New York)__>",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "apiKey",
+              "value": "<__PLACEHOLDER_VALUE__Your OpenWeatherMap API key__>",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "17cb570d-4d24-441d-89a9-28142c6e38ab",
+      "name": "Set Configuration",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        464,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://api.openweathermap.org/data/2.5/weather?q=Pune&appid=69a616e50906b240ffb8e62ff169c663&units=metric",
+        "options": {}
+      },
+      "id": "e76d463b-59cd-4617-8271-428d97de804b",
+      "name": "Fetch Weather Data",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        688,
+        400
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "chatId": "483465547",
+        "text": "=⚠️ *Weather Report Failed*\n\nUnable to fetch weather data. Please check your API key and city name.\nTime: {{ $now.toFormat(\"MMM d, yyyy h:mm a\") }}",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "2665f973-ee21-4bcf-b86e-7e2fa0c65565",
+      "name": "Send Error Alert",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        912,
+        496
+      ],
+      "webhookId": "a239df8c-5476-4808-8602-22a3a74b5a28",
+      "credentials": {
+        "telegramApi": {
+          "id": "xrZUyWTs1cklNVVK",
+          "name": "Telegram account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1",
+              "name": "city",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "country",
+              "value": "={{ $json.sys.country }}",
+              "type": "string"
+            },
+            {
+              "id": "3",
+              "name": "temperature",
+              "value": "={{ $json.main.temp }}",
+              "type": "number"
+            },
+            {
+              "id": "4",
+              "name": "feelsLike",
+              "value": "={{ $json.main.feels_like }}",
+              "type": "number"
+            },
+            {
+              "id": "5",
+              "name": "pressure",
+              "value": "={{ $json.main.pressure }}",
+              "type": "number"
+            },
+            {
+              "id": "6",
+              "name": "humidity",
+              "value": "={{ $json.main.humidity }}",
+              "type": "number"
+            },
+            {
+              "id": "7",
+              "name": "windSpeed",
+              "value": "={{ $json.wind.speed }}",
+              "type": "number"
+            },
+            {
+              "id": "8",
+              "name": "clouds",
+              "value": "={{ $json.clouds.all }}",
+              "type": "number"
+            },
+            {
+              "id": "9",
+              "name": "visibility",
+              "value": "={{ Math.round($json.visibility / 1000) }}",
+              "type": "number"
+            },
+            {
+              "id": "10",
+              "name": "description",
+              "value": "={{ $json.weather[0].description }}",
+              "type": "string"
+            },
+            {
+              "id": "11",
+              "name": "timestamp",
+              "value": "={{ $now.toFormat(\"MMM d, yyyy h:mm a\") }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d920e40d-5c85-4867-a6cb-955e5e79691d",
+      "name": "Format Weather Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        912,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "483465547",
+        "text": "=🌤 *Weather Report*\n━━━━━━━━━━━━━━━\n\n📍 *Location*\n🏙 {{ $json.city }}, {{ $json.country }}\n\n🌡 *Temperature*\n🌡️ Current: {{ $json.temperature }}°C\n🤒 Feels Like: {{ $json.feelsLike }}°C\n☁️ Conditions: {{ $json.description }}\n\n💨 *Atmospheric Data*\n📊 Pressure: {{ $json.pressure }} hPa\n💧 Humidity: {{ $json.humidity }}%\n🌬 Wind Speed: {{ $json.windSpeed }} m/s\n☁️ Cloud Cover: {{ $json.clouds }}%\n👁 Visibility: {{ $json.visibility }} km\n\n🕐 Updated: {{ $json.timestamp }}",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "e8392269-bdd3-402a-bc53-2030d12f5a5f",
+      "name": "Send Weather Report",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1136,
+        304
+      ],
+      "webhookId": "5d2bf153-b1b9-4bba-8a80-bc89979e762e",
+      "credentials": {
+        "telegramApi": {
+          "id": "xrZUyWTs1cklNVVK",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Every 2 Hours": {
+      "main": [
+        [
+          {
+            "node": "Set Configuration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Configuration": {
+      "main": [
+        [
+          {
+            "node": "Fetch Weather Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Weather Data": {
+      "main": [
+        [
+          {
+            "node": "Format Weather Data",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Error Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Weather Data": {
+      "main": [
+        [
+          {
+            "node": "Send Weather Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "6f1ac578-4573-432b-9d7f-ff3384962f3e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "98d1bd8532e891166410762d5735e357a48c91c61fe37d92c4a90eb6efa5855f"
+  },
+  "nodeGroups": [],
+  "id": "V11PME1mXfyDqI8T",
+  "tags": []
+}
