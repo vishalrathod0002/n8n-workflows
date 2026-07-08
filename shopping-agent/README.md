@@ -15,7 +15,17 @@ An AI-powered shopping assistant built with **n8n**, **Google Gemini**, **Telegr
 - 📲 Sends results directly to Telegram
 
 ---
+---
 
+## 🖼️ Workflow Architecture
+
+<p align="center">
+  <img src="./architecture.png" alt="Shopping Agent Workflow" width="100%">
+</p>
+
+> **Note:** This diagram illustrates the complete n8n workflow used to process shopping requests and return the top product deals.
+
+---
 ## 🏗️ Workflow Overview
 
 ```
