@@ -1,0 +1,159 @@
+{
+  "name": "Send Email",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -192,
+        -16
+      ],
+      "id": "fa14733a-6135-400b-b4c7-597a0be3d652",
+      "name": "When chat message received",
+      "webhookId": "f7d0aec4-6340-4166-8e3a-4bd6ba537d64"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "Use the **Send Email** tool to send emails based on the user's request. Keep the email short, clear, and professional. Always end the email with:\n\nRegards,\nVishal Rathod\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        16,
+        -16
+      ],
+      "id": "1fe55e98-927e-46bb-9c44-03a86aa4b09c",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {
+          "webSearch": {
+            "searchContextSize": "high"
+          }
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -64,
+        208
+      ],
+      "id": "c1e1febf-4ad1-4e41-9413-9f509009582b",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "VAlBj7HI7NUkrHvk",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        112,
+        224
+      ],
+      "id": "dff864fc-fa26-4b9e-9170-9604703f1bd8",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('To', ``, 'string') }}",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "emailType": "text",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.2,
+      "position": [
+        256,
+        224
+      ],
+      "id": "c3a44f72-134d-4bea-8158-0da78d24ec7f",
+      "name": "Send a message in Gmail",
+      "webhookId": "a7059b10-7627-4318-af34-5c6fb6424c2d",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Gnif6pGVN7ENsKv7",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message in Gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "4f308c4e-fe4a-4d6f-afdd-3326cbf59e90",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "98d1bd8532e891166410762d5735e357a48c91c61fe37d92c4a90eb6efa5855f"
+  },
+  "nodeGroups": [],
+  "id": "arUegm0GfSaFaMmK",
+  "tags": []
+}
